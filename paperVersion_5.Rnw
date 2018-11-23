@@ -1,0 +1,257 @@
+\documentclass{article}
+
+%%%%
+% PLOTS mapas
+% eval=FALSE
+% results=HIDE (verbatim default)
+%%%%
+\usepackage{rotating}
+\usepackage[utf8]{inputenc}
+\usepackage{longtable}
+\usepackage{authblk}
+\usepackage{adjustbox}
+
+
+\title{LOS INDICES DEL MUNDO}
+% autores
+\renewcommand\Authand{, y }
+\author[1]{\normalsize Estrella DelCurso}
+\author[2]{\normalsize Prossimo Deal Lado}
+
+\affil[1,2]{\small  Escuela de Ingeniería,Universidad de la vida\\
+\texttt{{delcurso,deallado}@vida.edu}}
+\affil[1]{\small Instituto de altas investigaciones financieras\\
+Banco del Parque\\
+\texttt{delcurso@bp.com}}
+
+\date{}
+
+%%%%
+\begin{document}
+\SweaveOpts{concordance=TRUE}
+
+\maketitle
+
+
+\begin{abstract}
+Este es mi primer trabajo en exploracion y modelamiento de indices usando LATEX. Este trabajo lo he hecho bajo la filosofía de trabajo replicable. Este es mi primer trabajo en exploracion y modelamiento de indices usando LATEX. Este trabajo lo he hecho bajo la filosofía de trabajo replicable. Este es mi primer trabajo en exploracion y modelamiento de indices usando LATEX. Este trabajo lo he hecho bajo la filosofía de trabajo replicable. Este es mi primer trabajo en exploracion y modelamiento de indices usando LATEX. Este trabajo lo he hecho bajo la filosofía de trabajo replicable.
+\end{abstract}
+
+\section*{Introducción}
+
+Aqui les presento mi investigacion sobre diversos indices sociales en el mundo. Los indices los conseguí de wikipedia, espero que les gusten mucho. Aqui les presento mi investigacion sobre diversos indices sociales en el mundo. Los indices los conseguí de wikipedia, espero que les gusten mucho.Aqui les presento mi investigacion sobre diversos indices sociales en el mundo. Los indices los conseguí de wikipedia, espero que les gusten mucho.Aqui les presento mi investigacion sobre diversos indices sociales en el mundo. Los indices los conseguí de wikipedia, espero que les gusten mucho.
+Aqui les presento mi investigacion sobre diversos indices sociales en el mundo. Los indices los conseguí de wikipedia, espero que les gusten mucho.Aqui les presento mi investigacion sobre diversos indices sociales en el mundo. Los indices los conseguí de wikipedia, espero que les gusten mucho.Aqui les presento mi investigacion sobre diversos indices sociales en el mundo. Los indices los conseguí de wikipedia, espero que les gusten mucho.
+
+Comencemos viendo que hay en la sección \ref{univariada} en la página \pageref{univariada}.
+
+\clearpage
+
+
+
+\section{Exploración Univariada}\label{univariada}
+
+En esta sección exploro cada índice. En esta sección exploro cada índice. En esta sección exploro cada índice. En esta sección exploro cada índice. En esta sección exploro cada índice. En esta sección exploro cada índice. En esta sección exploro cada índice. En esta sección exploro cada índice. En esta sección exploro cada índice.
+
+
+
+<<getData, echo=FALSE>>=
+# carga de datos
+filename="indexes.csv"
+dataidx=read.csv(filename, stringsAsFactors = T)
+@
+
+
+Para conocer el comportamiento de las variables se ha preparado la Tabla \ref{Tfrecuencias}, donde se describe la distribución de las modalidades de cada variable. Los números representan la situación de algun país en ese indicador, donde el mayor valor numérico es la mejor situación.
+
+<<tabFrec,results=tex,echo=FALSE>>=
+library(reporttools)
+library(xtable)
+
+titulo <- "Tablas de Frecuencia de la variables en estudio"
+tableNominal(vars = dataidx[, c(7:10)], 
+             cap = titulo, vertical = FALSE, 
+             lab ="Tfrecuencias", # aqui altere c.r.a v2
+             caption.placement = "top",
+             font.size = "normalsize",
+             add.to.row = list(pos = list(0),
+                               command = "\\hline"))
+@
+
+
+Como apreciamos en la Tabla \ref{Tfrecuencias}, los países en la mejor situación son los menos, salvo en el caso del \emph{índice de libertas mundial}\footnote{Nótese que esto se puede deber a la {\bf menor} cantidad de categorías.}
+
+\clearpage
+
+Para resaltar lo anterior, tenemos la Figura \ref{barplots} en la página \pageref{barplots}. 
+
+
+%%%%% figure
+\begin{figure}[h]
+\centering
+<<barplots, echo=FALSE,fig=TRUE>>=
+par(mfrow=c(2,2),mar=c(5,5,3,3)) # top, left, etc...
+top_y=50
+
+demoTable=table(dataidx$Democracy)
+demoTableRel=round(prop.table(demoTable)*100,1)
+title='Democracia'
+paleta='red'
+demoTableRelPlot=barplot(demoTableRel,main=title,
+                         col=paleta,ylim = c(0,top_y),
+                         ylab = "%")
+###
+ecoTable=table(dataidx$EconomicFreedom)
+ecoTableRel=round(prop.table(ecoTable)*100,1)
+title='Libertad Económica'
+paleta='red'
+barplot(ecoTableRel,main=title,
+        col=paleta,ylim = c(0,top_y),
+        ylab = "%")
+
+worldTable=table(dataidx$WorldFreedom)
+worldTableRel=round(prop.table(worldTable)*100,1)
+title='Libertad en el Mundo'
+paleta='red'
+barplot(worldTableRel,main=title,
+        col=paleta,ylim = c(0,top_y),
+        ylab = "%")
+###
+pressTable=table(dataidx$PressFreedom)
+pressTableRel=round(prop.table(pressTable)*100,1)
+title='Libertad de Prensa'
+paleta='red'
+barplot(pressTableRel,main=title,
+        col=paleta,ylim = c(0,top_y),
+        ylab = "%",las=2)
+@
+\caption{Distribución de Indicadores}
+\label{barplots}
+\end{figure}
+
+Además de la distribución de los variable, es importante saber el valor central y otros estadísticos. La Tabla \ref{statsnum} de la página \pageref{statsnum} y la Tabla \ref{statsord} de la página \pageref{statsord} nos muestran los estadísticos apropiados segun el tipo de variable.
+
+
+<<summary1, results=tex, echo=FALSE>>=
+library(stargazer)
+vars1 <- dataidx[, c(1:2)]
+
+stargazer(vars1,title = "Estadísticos para variables numéricas",
+          summary.stat = c("n","mean","median","min","max"),
+          label = "statsnum")
+@
+
+<<summary2, results=tex, echo=FALSE>>=
+library(stargazer)
+vars2 <- dataidx[, c(3:6)]
+
+stargazer(vars2,title = "Estadísticos para variables ordinales",
+          summary.stat = c("n", "median","max","min"),
+          label = "statsord")
+@
+
+
+\section{Exploración Bivariada}
+
+En este trabajo estamos interesados en el impacto de los otros indices en el nivel de Democracia. Veamos las relaciones bivariadas que tiene esta variable con todas las demás:
+
+<<corrDem, results=tex, echo=FALSE>>=
+explanans=names(dataidx)[c(3:6)]
+corrDem=cor(dataidx[,2],dataidx[,explanans],
+    use = "na.or.complete")
+stargazer(corrDem, 
+          title="Correlación de GDP con las demás variables",
+          flip=TRUE,
+          label = "corrDem")
+@
+
+
+Veamos la correlación entre las variables independientes:
+
+
+\begin{sidewaystable}
+\centering
+\caption{Correlación entre variables independientes}
+<<corrTableX, results=tex, echo=FALSE>>=
+corrTableX=round(cor(dataidx[explanans],
+               use = "na.or.complete"),2)
+corrTableX_copy=corrTableX
+corrTableX[upper.tri(corrTableX)]<-""
+
+stargazer(corrTableX,float = F,
+          label = 'corrTableX')
+@
+\end{sidewaystable}
+
+Lo visto en la Tabla \ref{corrTableX} se refuerza claramente en la Figura \ref{corrPlotX}.
+
+\begin{figure}[h]
+\centering
+\begin{adjustbox}{width=7cm,height=7cm,clip,trim=1.5cm 0.5cm 0cm 1.5cm}
+<<corrPlotX, echo=FALSE,fig=TRUE>>=
+library(corrplot)
+corrplot(corrTableX_copy, type = "lower", diag = F,
+         addCoef.col = "black")
+@
+\end{adjustbox}
+\caption{correlación entre predictores}
+\label{corrPlotX}
+\end{figure}
+
+
+\clearpage
+
+\section{Modelos de Regresión}
+
+FFinalmente, vemos los modelos propuestos. Primero sin el índice de democracia como independiente, y luego con éste. Los resultados se muestran en la Tabla \ref{regresiones} de la página \pageref{regresiones}.
+
+<<regresiones, echo=FALSE>>=
+LinRegA = lm(gdp ~ ., data = dataidx[,c(2:5)])
+LinRegB = lm(gdp ~ ., data = dataidx[,c(2:6)])
+@
+
+
+<<regresionesPlot,results=tex, echo=false>>=
+stargazer(LinRegA,LinRegB,title = "Modelos de Regresión", 
+          label = "regresiones")
+@
+
+\clearpage
+
+\section{Exploración Espacial}
+
+Estos son los lugares donde tenemos información:
+
+<<getMap, echo=FALSE,results=verbatim>>=
+library(rgdal)
+folder='world_map'
+file='world_map.shp'
+mapaFile=file.path(folder,file)
+mapaMundo= rgdal::readOGR(mapaFile,stringsAsFactors=F) 
+@
+
+<<checkNames, echo=FALSE,eval=FALSE>>=
+names(mapaMundo)
+@
+
+<<mergeMap,echo=FALSE>>=
+mapaMundoAll=merge(mapaMundo,dataidx, by.x='NAME', by.y='Country',all.x=F)
+@
+
+<<checkSize, echo=F,eval=F>>=
+nrow(mapaMundoAll)
+nrow(mapaMundo)
+@
+
+\begin{figure}[h]
+\centering
+\begin{adjustbox}{width=11cm,height=8cm,clip,trim=1.5cm 2.5cm 0cm 2.5cm}
+<<plotMap1, echo=FALSE, fig=TRUE>>=
+plot(mapaMundo,col='black')
+plot(mapaMundoAll,col='pink',border='grey',add=T)
+@
+\end{adjustbox}
+\caption{Paises con información diponible}\label{rawmap}
+\end{figure}
+
+
+\end{document}

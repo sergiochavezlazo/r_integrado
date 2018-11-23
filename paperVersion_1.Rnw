@@ -1,0 +1,168 @@
+\documentclass{article}
+
+% spanish-inputenc
+% longtable for reportable
+% echo in chunk
+% results in latex (results=tex)
+% par(mfrow=c(filas,columnas))
+% stargazer and report table packages
+
+\usepackage[utf8]{inputenc}
+\usepackage{longtable}
+
+\begin{document}
+\SweaveOpts{concordance=TRUE}
+
+LOS INDICES DEL MUNDO
+
+
+Por: Estrella Delcurso
+
+
+Introducción
+
+Aqui les presento mi investigacion sobre diversos indices sociales en el mundo. Los indices los conseguí de wikipedia, espero que les gusten mucho.
+
+
+Exploración Univariada
+
+En esta sección exploro cada índice.
+
+
+<<getData, echo=FALSE>>=
+# carga de datos
+filename="indexes.csv"
+dataidx=read.csv(filename, stringsAsFactors = T)
+@
+
+
+Este es el comportamiento de las variables a estudiar. Veamos su tabla de frecuencias:
+
+<<tabFrec, results=tex,echo=FALSE>>=
+library(reporttools)
+library(xtable)
+
+titulo <- "Tablas de Frecuencia de la variables en estudio"
+tableNominal(vars = dataidx[, c(7:10)], 
+             cap = titulo, vertical = FALSE,
+             caption.placement = "top",
+             add.to.row = list(pos = list(0),
+                               command = "\\hline"))
+@
+
+
+Una vista gráfica a lo anterior la tenemos a continuación:
+
+<<barplots, echo=FALSE,fig=TRUE>>=
+par(mfrow=c(2,2)) 
+
+
+demoTable=table(dataidx$Democracy)
+demoTableRel=round(prop.table(demoTable)*100,1)
+title='Democracia'
+paleta='red'
+demoTableRelPlot=barplot(demoTableRel,main=title,
+                         col=paleta,ylim = c(0,100),
+                         ylab = "%")
+###
+ecoTable=table(dataidx$EconomicFreedom)
+ecoTableRel=round(prop.table(ecoTable)*100,1)
+title='Libertad Económica'
+paleta='red'
+barplot(ecoTableRel,main=title,
+        col=paleta,ylim = c(0,100),
+        ylab = "%")
+
+#####
+worldTable=table(dataidx$WorldFreedom)
+worldTableRel=round(prop.table(worldTable)*100,1)
+title='Libertad en el Mundo'
+paleta='red'
+barplot(worldTableRel,main=title,
+        col=paleta,ylim = c(0,100),
+        ylab = "%")
+####
+pressTable=table(dataidx$PressFreedom)
+pressTableRel=round(prop.table(pressTable)*100,1)
+title='Libertad de Prensa'
+paleta='red'
+barplot(pressTableRel,main=title,
+        col=paleta,ylim = c(0,100),
+        ylab = "%",las=2)
+@
+
+
+Podemos mostrar los estadísticos de cada variable:
+<<summary1, results=tex, echo=FALSE>>=
+library(stargazer)
+vars1 <- dataidx[, c(1:2)]
+
+stargazer(vars1,title = "Medidas estadísticas",summary.stat = c("n","mean","median","min","max"))
+@
+
+<<summary2, results=tex, echo=FALSE>>=
+library(stargazer)
+vars2 <- dataidx[, c(3:6)]
+
+stargazer(vars2,title = "Medidas estadísticas",summary.stat = c("n", "median","max","min"))
+@
+
+
+Exploración Bivariada
+
+En este trabajo estamos interesados en el impacto de los otros indices en el nivel de Democracia. Veamos las relaciones bivariadas que tiene esta variable con todas las demás:
+
+<<corrDem, results=tex, echo=FALSE>>=
+explanans=names(dataidx)[c(3:6)]
+corrDem=cor(dataidx[,2],dataidx[,explanans],
+    use = "na.or.complete")
+stargazer(corrDem, title="Correlación de GDP con las demás variables")
+@
+
+
+Veamos la correlación entre las variables independientes:
+
+
+<<corrTableX, results=tex, echo=FALSE>>=
+corrTableX=round(cor(dataidx[explanans],
+               use = "na.or.complete"),2)
+
+# Hide upper triangle
+
+corrTableX[upper.tri(corrTableX)]<-""
+
+stargazer(corrTableX, title="Correlación entre variables independientes")
+@
+
+
+
+
+Finalmente, vemos los modelos propuestos. Primero sin el índice de democracia como independiente, y luego con éste:
+<<regresiones, echo=FALSE>>=
+LinRegA = lm(gdp ~ ., data = dataidx[,c(2:5)])
+LinRegB = lm(gdp ~ ., data = dataidx[,c(2:6)])
+@
+
+
+<<regresionesPlot,results=tex, echo=false>>=
+stargazer(LinRegA,LinRegB,title = "Modelos de Regresión")
+@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\end{document}

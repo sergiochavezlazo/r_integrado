@@ -1,0 +1,180 @@
+\documentclass{article}
+
+% plain R
+% chunk and its name
+% fig
+
+
+\begin{document}
+\SweaveOpts{concordance=TRUE}
+
+LOS INDICES DEL MUNDO
+
+
+Por: Estrella Delcurso
+
+
+Introducción
+
+Aqui les presento mi investigacion sobre diversos indices sociales en el mundo. Los indices los conseguí de wikipedia, espero que les gusten mucho.
+
+
+Exploración Univariada
+
+En esta sección exploro cada índice.
+
+
+
+<<getData>>=
+# carga de datos
+filename="indexes.csv"
+dataidx=read.csv(filename, stringsAsFactors = T)
+@
+
+
+Este es el comportamiento de la democracia en el mundo, veamos primero las frecuencias absolutas:
+<<demoTable>>=
+demoTable=table(dataidx$Democracy)
+demoTable
+@
+
+Ahora las frecuencias relativas:
+<<demoTableRel>>=
+demoTableRel=round(prop.table(demoTable)*100,1)
+demoTableRel
+@
+
+Y aquí el plot que representa esta distribución
+<<demoTableRelPlot,fig=TRUE>>=
+title='Distribución de la Democracia'
+paleta='red'
+barplot(demoTableRel,main=title,
+        col=paleta,ylim = c(0,100),
+        ylab = "%")
+
+@
+
+
+La Libertad económica en el mundo en una tabla:
+<<ecoTable>>=
+ecoTable=table(dataidx$EconomicFreedom)
+ecoTable
+@
+
+
+Ahora las frecuencias relativas:
+<<ecoTableRel>>=
+ecoTableRel=round(prop.table(ecoTable)*100,1)
+ecoTableRel
+@
+
+Y aquí el plot que representa esta distribución
+<<ecoTableRelPlot,fig=TRUE>>=
+title='Distribución de la Libertad Económica'
+paleta='red'
+barplot(ecoTableRel,main=title,
+        col=paleta,ylim = c(0,100),
+        ylab = "%")
+
+@
+
+
+La Libertad general en el mundo en una tabla:
+<<worldTable>>=
+worldTable=table(dataidx$WorldFreedom)
+worldTable
+@
+
+
+Ahora las frecuencias relativas:
+<<worldTableRel>>=
+worldTableRel=round(prop.table(worldTable)*100,1)
+worldTableRel
+@
+
+Y aquí el plot que representa esta distribución
+<<worldTableRelPlot,fig=TRUE>>=
+title='Distribución de la Libertad en el Mundo'
+paleta='red'
+barplot(worldTableRel,main=title,
+        col=paleta,ylim = c(0,100),
+        ylab = "%")
+@
+
+
+La Libertad de prensa en el mundo en una tabla:
+<<pressTable>>=
+pressTable=table(dataidx$PressFreedom)
+pressTable
+@
+
+
+Ahora las frecuencias relativas:
+<<pressTableRel>>=
+pressTableRel=round(prop.table(pressTable)*100,1)
+pressTableRel
+@
+
+
+Y aquí el plot que representa esta distribución
+<<pressTableRelPlot,fig=TRUE>>=
+title='Distribución de la Libertad de Prensa'
+paleta='red'
+barplot(pressTableRel,main=title,
+        col=paleta,ylim = c(0,100),
+        ylab = "%")
+@
+
+
+Podemos mostrar los estadísticos de cada variable:
+<<summary>>=
+summary(dataidx[,-1])
+@
+
+
+Exploración Bivariada
+
+En este trabajo estamos interesados en el impacto de los otros indices en el nivel de Democracia. Veamos las relaciones bivariadas que tiene esta variable con todas las demás:
+<<corrDem>>=
+explanans=names(dataidx)[c(3:6)]
+corrDem=cor(x=dataidx[,2],
+            y=dataidx[,explanans],
+            use = "na.or.complete",
+            method = "spearman")
+corrDem
+@
+
+
+
+
+Veamos la correlación entre las variables independientes:
+
+<<corrTableX>>=
+corrTable=round(cor(dataidx[explanans],
+               use = "na.or.complete"),2)
+
+# ocultar media matriz
+corrTable[upper.tri(corrTable)]<-""
+as.data.frame(corrTable)
+@
+
+
+Finalmente, vemos los modelos propuestos. Primero sin el índice de democracia como independiente:
+<<regresionA>>=
+LinRegA = lm(gdp ~ ., data = dataidx[,c(2:5)])
+summary(LinRegA)
+
+@
+
+Luego incluyendo democracia.
+
+<<regresionB>>=
+LinRegB = lm(gdp ~ ., data = dataidx[,c(2:6)])
+summary(LinRegB)
+@
+
+
+
+
+
+\end{document}
